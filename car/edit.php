@@ -1,14 +1,14 @@
 <?php
 
-require_once __DIR__ . '/bootstrap.php';
+require_once __DIR__ . '/../bootstrap.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $db->query("UPDATE `car` SET `customer_id`='" . (int)$_POST['customer_id'] . "', `vin`='" . $db->real_escape_string($_POST['vin']) . "', `license_plate`='" . $db->real_escape_string($_POST['license_plate']) . "', `model`='" . $db->real_escape_string($_POST['model']) . "' WHERE `id`='" . (int)$_REQUEST['car_id'] . "'");
-  redirect('/car.browse.php');
+  redirect('/car/browse.php');
 }
 
 $breadcrumbs = [
-  ['href' => '/car.browse.php', 'title' => "Автомобили"],
+  ['href' => '/car/browse.php', 'title' => "Автомобили"],
   ['title' => "Редактирование автомобиля"]
 ];
 
@@ -27,7 +27,7 @@ foreach ($result->fetch_all(MYSQLI_ASSOC) as $customer) {
 
 ?>
 
-<?php require_once __DIR__ . '/inc/header.php'; ?>
+<?php require_once __DIR__ . '/../inc/header.php'; ?>
 
 <div class="d-flex align-items-center mb-4">
   <span class="h3 me-auto">Редактирование автомобиля</span>
@@ -35,7 +35,7 @@ foreach ($result->fetch_all(MYSQLI_ASSOC) as $customer) {
 
 <div class="row align-items-start">
   <div class="col-9">
-    <form method="POST" action="/car.edit.php?car_id=<?= $item['id'] ?>">
+    <form method="POST" action="/car/edit.php?car_id=<?= $item['id'] ?>">
       <div class="mb-3">
         <?php fieldRel ('customer_id', 'Клиент', $item['customer_id'], $customers) ?>
       </div>
@@ -66,6 +66,6 @@ foreach ($result->fetch_all(MYSQLI_ASSOC) as $customer) {
   </div>
 </div>
 
-<?php modalDelete('modalDelete', 'Удалить автомобиль', '/car.delete.php?car_id=' . $item['id']) ?>
+<?php modalDelete('modalDelete', 'Удалить автомобиль', '/car/delete.php?car_id=' . $item['id']) ?>
 
-<?php require_once __DIR__ . '/inc/footer.php'; ?>
+<?php require_once __DIR__ . '/../inc/footer.php'; ?>

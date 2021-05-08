@@ -1,14 +1,14 @@
 <?php
 
-require_once __DIR__ . '/bootstrap.php';
+require_once __DIR__ . '/../bootstrap.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $db->query("UPDATE `customer` SET `full_name`='" . $db->real_escape_string($_POST['full_name']) . "' WHERE `id`='" . (int)$_REQUEST['customer_id'] . "'");
-  redirect('/customer.browse.php');
+  redirect('/customer/browse.php');
 }
 
 $breadcrumbs = [
-  ['href' => '/customer.browse.php', 'title' => "Клиенты"],
+  ['href' => '/customer/browse.php', 'title' => "Клиенты"],
   ['title' => "Редактирование клиента"]
 ];
 
@@ -18,7 +18,7 @@ $item = $result->fetch_assoc();
 
 ?>
 
-<?php require_once __DIR__ . '/inc/header.php'; ?>
+<?php require_once __DIR__ . '/../inc/header.php'; ?>
 
 <div class="d-flex align-items-center mb-4">
   <span class="h3 me-auto">Редактирование клиента</span>
@@ -26,7 +26,7 @@ $item = $result->fetch_assoc();
 
 <div class="row align-items-start">
   <div class="col-9">
-    <form method="POST" action="/customer.edit.php?customer_id=<?= $item['id'] ?>">
+    <form method="POST" action="/customer/edit.php?customer_id=<?= $item['id'] ?>">
       <div class="mb-3">
         <?php field ('full_name', 'ФИО', $item['full_name']) ?>
       </div>
@@ -48,6 +48,6 @@ $item = $result->fetch_assoc();
   </div>
 </div>
 
-<?php modalDelete('modalDelete', 'Удалить клиента', '/customer.delete.php?customer_id=' . $item['id']) ?>
+<?php modalDelete('modalDelete', 'Удалить клиента', '/customer/delete.php?customer_id=' . $item['id']) ?>
 
-<?php require_once __DIR__ . '/inc/footer.php'; ?>
+<?php require_once __DIR__ . '/../inc/footer.php'; ?>

@@ -1,22 +1,22 @@
 <?php
 
-require_once __DIR__ . '/bootstrap.php';
+require_once __DIR__ . '/../bootstrap.php';
 
 $breadcrumbs = [
-  ['href' => '/customer.browse.php', 'title' => "Клиенты"],
-  ['title' => "Все клиенты"]
+  ['href' => '/category/browse.php', 'title' => "Категории"],
+  ['title' => "Все категории"]
 ];
 
-$result = $db->query("SELECT * FROM `customer`");
+$result = $db->query("SELECT * FROM `category`");
 
 $items = $result->fetch_all(MYSQLI_ASSOC);
 
 ?>
 
-<?php require_once __DIR__ . '/inc/header.php'; ?>
+<?php require_once __DIR__ . '/../inc/header.php'; ?>
 
 <div class="d-flex align-items-center mb-4">
-  <span class="h3 me-auto">Клиенты</span>
+  <span class="h3 me-auto">Категории</span>
   <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalAdd">Добавить</button>
 </div>
 
@@ -25,7 +25,7 @@ $items = $result->fetch_all(MYSQLI_ASSOC);
   <thead>
     <tr>
       <th scope="col">ID</th>
-      <th scope="col">ФИО</th>
+      <th scope="col">Название</th>
       <th scope="col">Действие</th>
     </tr>
   </thead>
@@ -33,8 +33,8 @@ $items = $result->fetch_all(MYSQLI_ASSOC);
     <?php foreach ($items as $item): ?>
     <tr>
       <th scope="row"><?= $item['id'] ?></th>
-      <td><?= $item['full_name'] ?></td>
-      <td><a href="/customer.edit.php?customer_id=<?= $item['id'] ?>">Изменить</a></td>
+      <td><?= $item['title'] ?></td>
+      <td><a href="/category/edit.php?category_id=<?= $item['id'] ?>">Изменить</a></td>
     </tr>
     <?php endforeach; ?>
   </tbody>
@@ -47,10 +47,10 @@ $items = $result->fetch_all(MYSQLI_ASSOC);
 </div>
 <?php endif; ?>
 
-<?php introModalAdd('modalAdd', 'Добавить клиента', '/customer.add.php') ?>
+<?php introModalAdd('modalAdd', 'Добавить категорию', '/category/add.php') ?>
   <div class="mb-3">
-    <?php field ('full_name', 'ФИО') ?>
+    <?php field ('title', 'Название') ?>
   </div>
 <?php outroModalAdd() ?>
 
-<?php require_once __DIR__ . '/inc/footer.php'; ?>
+<?php require_once __DIR__ . '/../inc/footer.php'; ?>

@@ -1,11 +1,11 @@
-<?php function field ($name, $label, $default = '') { ?>
+<?php function field ($name, $label, $default = null) { ?>
 <label for="input-<?= $name ?>" class="form-label"><?= $label ?></label>
 <input type="text" class="form-control" id="input-<?= $name ?>" name="<?= $name ?>" value="<?= $default ?>" />
 <?php } ?>
-<?php function introModalAdd ($id, $label, $action) { ?>
+<?php function introModalAdd ($id, $label, $action, $modal_class = '') { ?>
 <!-- Добавление -->
 <div class="modal fade" id="<?= $id ?>" tabindex="-1" aria-labelledby="<?= $id ?>Label" aria-hidden="true">
-  <div class="modal-dialog">
+  <div class="modal-dialog <?= $modal_class ?>">
     <form class="modal-content" method="POST" action="<?= $action ?>">
       <div class="modal-header">
         <h5 class="modal-title" id="<?= $id ?>Label"><?= $label ?></h5>
@@ -43,14 +43,14 @@
   </div>
 </div>
 <?php } ?>
-<?php function fieldRel ($name, $label, $default = '', $options = []) { ?>
+<?php function fieldRel ($name, $label, $default = null, $options = [], $multiple = false) { ?>
 <label for="input-<?= $name ?>" class="form-label"><?= $label ?></label>
-<select class="form-select" id="input-<?= $name ?>" name="<?= $name ?>">
-  <?php if ($default === ''): ?>
+<select class="form-select" id="input-<?= $name ?>" name="<?= $name ?><?= $multiple? '[]' : '' ?>" <?= $multiple ? 'multiple' : '' ?>>
+  <?php if (is_null($default) && !$multiple): ?>
   <option value="" disabled selected>Выберите</option>
   <?php endif ?>
   <?php foreach ($options as $key => $value): ?>
-  <option value="<?= $key ?>" <?= $key == $default ? 'selected' : '' ?>><?= $value ?></option>
+  <option value="<?= $key ?>" <?= (!is_null($default) && ($key == $default || (is_array($default) && in_array($key, $default)))) ? 'selected' : '' ?>><?= $value ?></option>
   <?php endforeach ?>
 </select>
 <?php } ?>
@@ -62,5 +62,5 @@
 
   $item = $result->fetch_assoc();
 ?>
-<a href="<?= $table ?>.edit.php?<?= $table ?>_<?= $pk_id ?>=<?= $id ?>"><?= $item[$label_key] ?></a>
+<a href="/<?= $table ?>/edit.php?<?= $table ?>_<?= $pk_id ?>=<?= $id ?>"><?= $item[$label_key] ?></a>
 <?php } ?>

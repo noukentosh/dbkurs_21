@@ -1,9 +1,9 @@
 <?php
 
-require_once __DIR__ . '/bootstrap.php';
+require_once __DIR__ . '/../bootstrap.php';
 
 $breadcrumbs = [
-  ['href' => '/car.browse.php', 'title' => "Автомобили"],
+  ['href' => '/car/browse.php', 'title' => "Автомобили"],
   ['title' => "Все автомобили"]
 ];
 
@@ -21,7 +21,7 @@ foreach ($result->fetch_all(MYSQLI_ASSOC) as $customer) {
 
 ?>
 
-<?php require_once __DIR__ . '/inc/header.php'; ?>
+<?php require_once __DIR__ . '/../inc/header.php'; ?>
 
 <div class="d-flex align-items-center mb-4">
   <span class="h3 me-auto">Автомобили</span>
@@ -48,7 +48,7 @@ foreach ($result->fetch_all(MYSQLI_ASSOC) as $customer) {
       <td><?= $item['vin'] ?></td>
       <td><?= $item['license_plate'] ?></td>
       <td><?= $item['model'] ?></td>
-      <td><a href="/car.edit.php?car_id=<?= $item['id'] ?>">Изменить</a></td>
+      <td><a href="/car/edit.php?car_id=<?= $item['id'] ?>">Изменить</a></td>
     </tr>
     <?php endforeach; ?>
   </tbody>
@@ -61,7 +61,7 @@ foreach ($result->fetch_all(MYSQLI_ASSOC) as $customer) {
 </div>
 <?php endif; ?>
 
-<?php introModalAdd('modalAdd', 'Добавить автомобиль', '/car.add.php') ?>
+<?php introModalAdd('modalAdd', 'Добавить автомобиль', '/car/add.php') ?>
   <div class="mb-3">
     <?php fieldRel ('customer_id', 'Клиент', '', $customers) ?>
   </div>
@@ -76,4 +76,4 @@ foreach ($result->fetch_all(MYSQLI_ASSOC) as $customer) {
   </div>
 <?php outroModalAdd() ?>
 
-<?php require_once __DIR__ . '/inc/footer.php'; ?>
+<?php require_once __DIR__ . '/../inc/footer.php'; ?>
