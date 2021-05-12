@@ -28,13 +28,11 @@ $cars = $result->fetch_all(MYSQLI_ASSOC);
   <span class="h3 me-auto">Редактирование клиента</span>
 </div>
 
-<div class="row align-items-start">
+<form method="POST" action="/customer/edit.php?customer_id=<?= $item['id'] ?>" class="row align-items-start">
   <div class="col-5">
-    <form method="POST" action="/customer/edit.php?customer_id=<?= $item['id'] ?>">
-      <div class="mb-3">
-        <?php field ('full_name', 'ФИО', $item['full_name']) ?>
-      </div>
-    </form>
+    <div class="mb-3">
+      <?php field ('full_name', 'ФИО', $item['full_name']) ?>
+    </div>
   </div>
   <div class="col-4">
     <div class="h4 mb-3">Автомобили</div>
@@ -58,7 +56,7 @@ $cars = $result->fetch_all(MYSQLI_ASSOC);
       </ul>
     </div>
   </div>
-</div>
+</form>
 
 <?php modalDelete('modalDelete', 'Удалить клиента', '/customer/delete.php?customer_id=' . $item['id']) ?>
 

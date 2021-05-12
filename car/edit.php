@@ -39,22 +39,20 @@ $total = array_sum(array_column($services, 'cost'));
   <span class="h3 me-auto">Редактирование автомобиля</span>
 </div>
 
-<div class="row align-items-start">
+<form method="POST" action="/car/edit.php?car_id=<?= $item['id'] ?>" class="row align-items-start">
   <div class="col-5">
-    <form method="POST" action="/car/edit.php?car_id=<?= $item['id'] ?>">
-      <div class="mb-3">
-        <?php fieldRel ('customer_id', 'Клиент', $item['customer_id'], $customers) ?>
-      </div>
-      <div class="mb-3">
-        <?php field ('vin', 'VIN', $item['vin']) ?>
-      </div>
-      <div class="mb-3">
-        <?php field ('license_plate', 'Номер авто', $item['license_plate']) ?>
-      </div>
-      <div class="mb-3">
-        <?php field ('model', 'Модель', $item['model']) ?>
-      </div>
-    </form>
+    <div class="mb-3">
+      <?php fieldRel ('customer_id', 'Клиент', $item['customer_id'], $customers) ?>
+    </div>
+    <div class="mb-3">
+      <?php field ('vin', 'VIN', $item['vin']) ?>
+    </div>
+    <div class="mb-3">
+      <?php field ('license_plate', 'Номер авто', $item['license_plate']) ?>
+    </div>
+    <div class="mb-3">
+      <?php field ('model', 'Модель', $item['model']) ?>
+    </div>
   </div>
   <div class="col-4">
     <div class="h4 mb-3">Оказываемые услуги</div>
@@ -79,7 +77,7 @@ $total = array_sum(array_column($services, 'cost'));
       </ul>
     </div>
   </div>
-</div>
+</form>
 
 <?php modalDelete('modalDelete', 'Удалить автомобиль', '/car/delete.php?car_id=' . $item['id']) ?>
 

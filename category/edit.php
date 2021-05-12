@@ -24,13 +24,11 @@ $item = $result->fetch_assoc();
   <span class="h3 me-auto">Редактирование категории</span>
 </div>
 
-<div class="row align-items-start">
+<form method="POST" action="/category/edit.php?category_id=<?= $item['id'] ?>" class="row align-items-start">
   <div class="col-9">
-    <form method="POST" action="/category/edit.php?category_id=<?= $item['id'] ?>">
-      <div class="mb-3">
-        <?php field ('title', 'Название', $item['title']) ?>
-      </div>
-    </form>
+    <div class="mb-3">
+      <?php field ('title', 'Название', $item['title']) ?>
+    </div>
   </div>
   <div class="col-3">
     <div class="card">
@@ -46,7 +44,7 @@ $item = $result->fetch_assoc();
       </ul>
     </div>
   </div>
-</div>
+</form>
 
 <?php modalDelete('modalDelete', 'Удалить категорию', '/category/delete.php?category_id=' . $item['id']) ?>
 
