@@ -36,3 +36,11 @@ function getList ($table, $pk_id, $label_keys, $label_template = null) {
 
   return $items;
 }
+
+function getTable ($table_name) {
+  global $db;
+
+  $result = $db->query("SELECT * FROM `" . $table_name . "`");
+
+  return $result->fetch_all(MYSQLI_ASSOC);
+}
