@@ -35,6 +35,18 @@ foreach ($result->fetch_all(MYSQLI_ASSOC) as $category) {
   $categories[$category['id']] = $category['title'];
 }
 
+// Отчеты
+
+$result = $db->query("
+  SELECT
+  (SELECT SUM(o.`total`) as `total` FROM `order` as o WHERE o.`employee_id`='" . (int)$_REQUEST['employee_id'] . "' AND o.`created_on` > (CURRENT_TIMESTAMP - INTERVAL 1 DAY)) as `total_day`,
+  (SELECT SUM(o.`total`) as `total` FROM `order` as o WHERE o.`employee_id`='" . (int)$_REQUEST['employee_id'] . "' AND o.`created_on` > (CURRENT_TIMESTAMP - INTERVAL 1 MONTH)) as `total_month`,
+  (SELECT SUM(o.`total`) as `total` FROM `order` as o WHERE o.`employee_id`='" . (int)$_REQUEST['employee_id'] . "' AND o.`created_on` > (CURRENT_TIMESTAMP - INTERVAL 3 MONTH)) as `total_quarter`,
+  (SELECT SUM(o.`total`) as `total` FROM `order` as o WHERE o.`employee_id`='" . (int)$_REQUEST['employee_id'] . "' AND o.`created_on` > (CURRENT_TIMESTAMP - INTERVAL 1 YEAR)) as `total_year`
+");
+
+$totals = $result->fetch_assoc();
+
 ?>
 
 <?php require_once __DIR__ . '/../inc/header.php'; ?>
@@ -44,13 +56,22 @@ foreach ($result->fetch_all(MYSQLI_ASSOC) as $category) {
 </div>
 
 <form method="POST" action="/employee/edit.php?employee_id=<?= $item['id'] ?>" class="row align-items-start">
-  <div class="col-9">
+  <div class="col-6">
     <div class="mb-3">
       <?php field ('full_name', 'ФИО', $item['full_name']) ?>
     </div>
     <div class="mb-3">
       <?php fieldRel ('categories', 'Категории', $item['categories'], $categories, true) ?>
     </div>
+  </div>
+  <div class="col-3">
+    <div class="h4 mb-3">Отчеты</div>
+    <ul class="list-group">
+      <li class="list-group-item">За день: <?= $totals['total_day'] ?> ₽</li>
+      <li class="list-group-item">За месяц: <?= $totals['total_month'] ?> ₽</li>
+      <li class="list-group-item">За квартал: <?= $totals['total_quarter'] ?> ₽</li>
+      <li class="list-group-item">За год: <?= $totals['total_year'] ?>₽</li>
+    </ul>
   </div>
   <div class="col-3">
     <div class="card">

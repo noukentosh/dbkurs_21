@@ -16,6 +16,10 @@ $result = $db->query("SELECT * FROM `customer` WHERE `id`='" . (int)$_REQUEST['c
 
 $item = $result->fetch_assoc();
 
+$result = $db->query("SELECT * FROM `car` WHERE `customer_id`='" . (int)$_REQUEST['customer_id'] . "'");
+
+$cars = $result->fetch_all(MYSQLI_ASSOC);
+
 ?>
 
 <?php require_once __DIR__ . '/../inc/header.php'; ?>
@@ -25,12 +29,20 @@ $item = $result->fetch_assoc();
 </div>
 
 <div class="row align-items-start">
-  <div class="col-9">
+  <div class="col-5">
     <form method="POST" action="/customer/edit.php?customer_id=<?= $item['id'] ?>">
       <div class="mb-3">
         <?php field ('full_name', 'ФИО', $item['full_name']) ?>
       </div>
     </form>
+  </div>
+  <div class="col-4">
+    <div class="h4 mb-3">Автомобили</div>
+    <ul class="list-group">
+      <?php foreach ($cars as $car): ?>
+      <li class="list-group-item"><?= editLink ('car', 'id', $car['id'], 'license_plate') ?></li>
+      <?php endforeach ?>
+    </ul>
   </div>
   <div class="col-3">
     <div class="card">

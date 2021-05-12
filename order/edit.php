@@ -3,46 +3,79 @@
 require_once __DIR__ . '/../bootstrap.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-  $db->query("UPDATE `service` SET `category_id`='" . (int)$_POST['category_id'] . "', `title`='" . $db->real_escape_string($_POST['title']) . "', `cost`='" . (float)$_POST['cost'] . "' WHERE `id`='" . (int)$_REQUEST['service_id'] . "'");
+  $result = $db->query("SELECT SUM(`cost`) as `total` FROM `service` WHERE `id` IN ('" . implode("', '", array_map('intval', $_POST['services'])) . "')");
 
-  redirect('/service/browse.php');
+  $total = $result->fetch_assoc();
+
+  $total = $total['total'];
+
+  $db->query("UPDATE `order` SET `employee_id`='" . (int)$_POST['employee_id'] . "', `customer_id`='" . (int)$_POST['customer_id'] . "', `car_id`='" . (int)$_POST['car_id'] . "', `total`='" . (float)$total . "', `comment`='" . $db->real_escape_string($_POST['comment']) . "', `status`='" . $db->real_escape_string($_POST['status']) . "' WHERE `id`='" . (int)$_REQUEST['order_id'] . "'");
+
+  $db->query("DELETE FROM `order_service` WHERE `order_id`='" . (int)$_REQUEST['order_id'] . "'");
+
+  foreach (array_map('intval', $_POST['services']) as $service_id) {
+    $db->query("INSERT INTO `order_service` (`order_id`, `service_id`) VALUES ('" . (int)$_REQUEST['order_id'] . "', '" . $service_id . "')");
+  }
+
+  redirect('/order/browse.php');
 }
 
 $breadcrumbs = [
-  ['href' => '/service/browse.php', 'title' => "Услуги"],
-  ['title' => "Редактирование услуги"]
+  ['href' => '/order/browse.php', 'title' => "Заказы"],
+  ['title' => "Редактирование заказа"]
 ];
 
-$result = $db->query("SELECT * FROM `service` WHERE `id`='" . (int)$_REQUEST['service_id'] . "'");
+$result = $db->query("SELECT * FROM `order` WHERE `id`='" . (int)$_REQUEST['order_id'] . "'");
 
 $item = $result->fetch_assoc();
 
-$result = $db->query("SELECT `id`, `title` FROM `category`");
+$result = $db->query("SELECT `service_id` FROM `order_service` WHERE `order_id`='" . (int)$_REQUEST['order_id'] . "'");
 
-$categories = [];
+$item['services'] = array_map('current', $result->fetch_all(MYSQLI_NUM));
 
-foreach ($result->fetch_all(MYSQLI_ASSOC) as $category) {
-  $categories[$category['id']] = $category['title'];
-}
+$employees = getList ('employee', 'id', 'full_name');
+$customers = getList ('customer', 'id', 'full_name');
+$cars = getList ('car', 'id', 'license_plate');
+$employees = getList ('employee', 'id', 'full_name');
+$services = getList ('service', 'id', ['title', 'cost'], '#title# - #cost# ₽');
 
 ?>
 
 <?php require_once __DIR__ . '/../inc/header.php'; ?>
 
 <div class="d-flex align-items-center mb-4">
-  <span class="h3 me-auto">Редактирование услуги</span>
+  <span class="h3 me-auto">Редактирование заказа</span>
 </div>
 
-<form method="POST" action="/service/edit.php?service_id=<?= $item['id'] ?>" class="row align-items-start">
+<form method="POST" action="/order/edit.php?order_id=<?= $item['id'] ?>" class="row align-items-start">
   <div class="col-9">
-    <div class="mb-3">
-      <?php fieldRel ('category_id', 'Категория', $item['category_id'], $categories) ?>
-    </div>
-    <div class="mb-3">
-      <?php field ('title', 'Название', $item['title']) ?>
-    </div>
-    <div class="mb-3">
-      <?php field ('cost', 'Стоимость', $item['cost']) ?>
+    <div class="row">
+      <div class="col">
+        <div class="mb-3">
+          <?php fieldRel ('employee_id', 'Работник', $item['employee_id'], $employees) ?>
+        </div>
+        <div class="mb-3">
+          <?php fieldRel ('customer_id', 'Клиент', $item['customer_id'], $customers) ?>
+        </div>
+        <div class="mb-3">
+          <?php fieldRel ('car_id', 'Автомобиль', $item['car_id'], $cars) ?>
+        </div>
+        <div class="mb-3">
+          <?php field ('comment', 'Комментарий', $item['comment']) ?>
+        </div>
+      </div>
+      <div class="col">
+        <div class="mb-3">
+          <?php fieldRel ('services', 'Услуги', $item['services'], $services, true) ?>
+        </div>
+        <div class="mb-3">
+          <?php fieldRel ('status', 'Статус', $item['status'], [
+            'processing' => "В работе",
+            'canceled' => "Отмена",
+            'complete' => "Выполнено"
+          ]) ?>
+        </div>
+      </div>
     </div>
   </div>
   <div class="col-3">
@@ -61,6 +94,6 @@ foreach ($result->fetch_all(MYSQLI_ASSOC) as $category) {
   </div>
 </form>
 
-<?php modalDelete('modalDelete', 'Удалить услугу', '/service/delete.php?service_id=' . $item['id']) ?>
+<?php modalDelete('modalDelete', 'Удалить заказ', '/order/delete.php?order_id=' . $item['id']) ?>
 
 <?php require_once __DIR__ . '/../inc/footer.php'; ?>

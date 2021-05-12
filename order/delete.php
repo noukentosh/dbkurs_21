@@ -2,8 +2,8 @@
 
 require_once __DIR__ . '/../bootstrap.php';
 
-$result = $db->query("DELETE FROM `service` WHERE `id`='" . (int)$_REQUEST['service_id'] . "'");
+$result = $db->query("DELETE FROM `order` WHERE `id`='" . (int)$_REQUEST['order_id'] . "'");
 
-redirect('/service/browse.php');
+redirect('/order/browse.php');
 
 ?>

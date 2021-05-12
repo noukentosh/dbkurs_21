@@ -4,6 +4,7 @@ require_once __DIR__ . '/../bootstrap.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $db->query("UPDATE `car` SET `customer_id`='" . (int)$_POST['customer_id'] . "', `vin`='" . $db->real_escape_string($_POST['vin']) . "', `license_plate`='" . $db->real_escape_string($_POST['license_plate']) . "', `model`='" . $db->real_escape_string($_POST['model']) . "' WHERE `id`='" . (int)$_REQUEST['car_id'] . "'");
+  
   redirect('/car/browse.php');
 }
 
@@ -24,6 +25,11 @@ foreach ($result->fetch_all(MYSQLI_ASSOC) as $customer) {
   $customers[$customer['id']] = $customer['full_name'];
 }
 
+$result = $db->query("SELECT s.`id`, s.`title`, s.`cost` FROM `service` as s INNER JOIN `order_service` as os ON s.`id` = os.`service_id` INNER JOIN `order` as o ON o.`id` = os.`order_id` WHERE o.`car_id`='" . (int)$_REQUEST['car_id'] . "'");
+
+$services = $result->fetch_all(MYSQLI_ASSOC);
+
+$total = array_sum(array_column($services, 'cost'));
 
 ?>
 
@@ -34,7 +40,7 @@ foreach ($result->fetch_all(MYSQLI_ASSOC) as $customer) {
 </div>
 
 <div class="row align-items-start">
-  <div class="col-9">
+  <div class="col-5">
     <form method="POST" action="/car/edit.php?car_id=<?= $item['id'] ?>">
       <div class="mb-3">
         <?php fieldRel ('customer_id', 'Клиент', $item['customer_id'], $customers) ?>
@@ -49,6 +55,15 @@ foreach ($result->fetch_all(MYSQLI_ASSOC) as $customer) {
         <?php field ('model', 'Модель', $item['model']) ?>
       </div>
     </form>
+  </div>
+  <div class="col-4">
+    <div class="h4 mb-3">Оказываемые услуги</div>
+    <ul class="list-group">
+      <?php foreach ($services as $service): ?>
+      <li class="list-group-item"><?= editLink ('service', 'id', $service['id'], 'title') ?></li>
+      <?php endforeach ?>
+      <li class="list-group-item">Всего: <?= $total ?> ₽</li>
+    </ul>
   </div>
   <div class="col-3">
     <div class="card">

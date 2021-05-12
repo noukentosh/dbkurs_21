@@ -15,7 +15,7 @@ $employees = getList ('employee', 'id', 'full_name');
 $customers = getList ('customer', 'id', 'full_name');
 $cars = getList ('car', 'id', 'license_plate');
 $employees = getList ('employee', 'id', 'full_name');
-$services = getList ('service', 'id', 'title');
+$services = getList ('service', 'id', ['title', 'cost'], '#title# - #cost# ₽');
 
 ?>
 
@@ -27,27 +27,45 @@ $services = getList ('service', 'id', 'title');
 </div>
 
 <?php if (count($items) !== 0): ?>
-<table class="table table-striped table-bordered">
+<table class="table table-bordered">
   <thead>
     <tr>
       <th scope="col">ID</th>
       <th scope="col">Работник</th>
       <th scope="col">Клиент</th>
       <th scope="col">Автомобиль</th>
-      <th scope="col">Создан/Обновлен</th>
+      <th scope="col">Создан</th>
+      <th scope="col">Обновлен</th>
       <th scope="col">Всего</th>
       <th scope="col">Действие</th>
     </tr>
   </thead>
   <tbody>
     <?php foreach ($items as $item): ?>
-    <tr>
+    <?php
+      switch ($item['status']) {
+        case 'processing': {
+          $row_class = 'table-light';
+          break;
+        }
+        case 'canceled': {
+          $row_class = 'table-danger';
+          break;
+        }
+        case 'complete': {
+          $row_class = 'table-success';
+          break;
+        }
+      }
+    ?>
+    <tr class="<?= $row_class ?>">
       <th scope="row"><?= $item['id'] ?></th>
       <td><?= editLink ('employee', 'id', $item['employee_id'], 'full_name') ?></td>
       <td><?= editLink ('customer', 'id', $item['customer_id'], 'full_name') ?></td>
-      <td><?= editLink ('car', 'id', $item['car_id'], 'title') ?></td>
-      <td><?= $item['created_on'] ?><br><?= $item['updated_on'] ?></td>
-      <td><?= $item['total'] ?></td>
+      <td><?= editLink ('car', 'id', $item['car_id'], 'license_plate') ?></td>
+      <td><?= date("H:i:s d/m/Y", strtotime($item['created_on'])) ?></td>
+      <td><?= date("H:i:s d/m/Y", strtotime($item['updated_on'])) ?></td>
+      <td><?= $item['total'] ?> ₽</td>
       <td><a href="/order/edit.php?order_id=<?= $item['id'] ?>">Изменить</a></td>
     </tr>
     <?php endforeach; ?>
@@ -61,7 +79,7 @@ $services = getList ('service', 'id', 'title');
 </div>
 <?php endif; ?>
 
-<?php introModalAdd('modalAdd', 'Добавить услугу', '/order/add.php', 'modal-lg') ?>
+<?php introModalAdd('modalAdd', 'Добавить заказ', '/order/add.php', 'modal-lg') ?>
   <div class="row">
     <div class="col">
       <div class="mb-3">
@@ -81,6 +99,13 @@ $services = getList ('service', 'id', 'title');
       <div class="mb-3">
         <?php fieldRel ('services', 'Услуги', [], $services, true) ?>
       </div>
+      <div class="mb-3">
+          <?php fieldRel ('status', 'Статус', 'processing', [
+            'processing' => "В работе",
+            'canceled' => "Отмена",
+            'complete' => "Выполнено"
+          ]) ?>
+        </div>
     </div>
   </div>
 <?php outroModalAdd() ?>
